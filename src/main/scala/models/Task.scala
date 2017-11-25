@@ -6,21 +6,23 @@ import scala.concurrent.Future
 case class Task (
   idTask: Option[Long],
   ownerId: Long,
-  name: String
+  name: String,
+  finished: Boolean
 )
 
 class TaskTable(tag: Tag) extends Table[Task](tag, "tasks"){
   val idTask = column[Long]("id_task", O.PrimaryKey)
   val ownerId = column[Long]("owner")
   val name = column[String]("name")
+  val finished = column[Boolean]("finished")
 
   val ownerFk = foreignKey("owner_id_fk", ownerId, TableQuery[UserTable])(_.idUser)
 
-  def * = (idTask.?, ownerId ,name) <> (Task.apply _ tupled, Task.unapply)
+  def * = (idTask.?, ownerId, name, finished) <> (Task.apply _ tupled, Task.unapply)
 }
 
 object TaskTable{
-  val table = TableQuery[TaskTable]
+  lazy val table = TableQuery[TaskTable]
 }
 
 class TaskRepository(db: Database) {

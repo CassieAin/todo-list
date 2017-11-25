@@ -20,7 +20,7 @@ class UserTable(tag: Tag) extends Table[User](tag, "users"){
 }
 
 object UserTable{
-  val table = TableQuery[UserTable]
+  lazy val table = TableQuery[UserTable]
 }
 
 class UserRepository(db: Database) {
