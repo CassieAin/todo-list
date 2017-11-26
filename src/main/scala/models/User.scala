@@ -29,6 +29,10 @@ class UserRepository(db: Database) {
   def create(user: User): Future[User] =
     db.run(userTableQuery returning userTableQuery += user)
 
+  def createInBatch(userSeq: Seq[User]) =
+    db.run(DBIO.sequence(userSeq.map(user => userTableQuery += user))
+      .transactionally)
+
   def update(user: User): Future[Int] =
     db.run(userTableQuery.filter(_.idUser === user.idUser).update(user))
 

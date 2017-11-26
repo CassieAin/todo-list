@@ -39,11 +39,17 @@ class TaskRepository(db: Database) {
   def create(task: Task): Future[Task] =
     db.run(taskTableQuery returning taskTableQuery += task)
 
+  def createInBatch(taskSeq: Seq[Task]) =
+    db.run(DBIO.sequence( taskSeq.map(t=>taskTableQuery+=t) ).transactionally)
+
   def update(task: Task): Future[Int] =
     db.run(taskTableQuery.filter(_.idTask === task.idTask).update(task))
 
   def delete(task: Task): Future[Int] =
     db.run(taskTableQuery.filter(_.idTask === task.idTask).delete)
+
+  def deleteById(id: Option[Long]): Future[Int] =
+    db.run(taskTableQuery.filter(_.idTask === id).delete)
 /*
   def getById(task: Task): Future[Option[Task]] =
     db.run(taskTableQuery.filter(_.idTask === task.idTask).result.headOption)
