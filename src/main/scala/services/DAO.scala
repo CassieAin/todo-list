@@ -48,33 +48,43 @@ object DAO {
     tasks.map(taskRepository.create(_))
   }
 
+  def getUserId(login: String) = {
+    val queryToGetUserId = (for {
+      user <- UserTable.table if user.login === login
+    } yield (user.idUser))
+    db.run(queryToGetUserId.result)
+  }
+
+  def selectUserId(login: String) = login match {
+      case "data" => 1
+      case "root" => 2
+    }
+
+
+  def checkUserLogin(login: String, password: String) = {
+    db.run(UserTable.table.filter(t => (t.login === login) && (t.password === password)).exists.result)
+  }
+
+  def checkUserPassword(password: String) = {
+    db.run(UserTable.table.filter(_.password === password).exists.result)
+  }
+
   def addTask(name: String, currentUser: Long) = {
     taskRepository.create(Task(Some(21), currentUser, name, false))
   }
 
   def deleteTask(id: Option[Long]) = {
-
     val getTaskByIdLoc = (for {
       task <- TaskTable.table if task.idTask === id
     } yield (task))
     val deleteAction = getTaskByIdLoc.delete
-    //db.run(deleteAction)
-    //taskRepository.delete(Task(Some(id)))
-    taskRepository.deleteById(id)
+    db.run(deleteAction)
   }
 
   def finishTask(id: Option[Long], userId: Long) = {
     val getTaskFinishedField = (for {
       task <- TaskTable.table if task.idTask === id
     } yield (task.finished))
-    /*
-    val getTaskFinishedField = (for {
-      task <- TaskTable.table
-      user <- UserTable.table if task.ownerId === userId
-    } yield (task, user))
-        .filter(_._1.idTask === id)
-        .map(_._1.finished)
-        */
     val updateAction = getTaskFinishedField.update(true)
     db.run(updateAction)
   }

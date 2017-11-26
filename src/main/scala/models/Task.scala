@@ -27,15 +27,7 @@ object TaskTable{
 
 class TaskRepository(db: Database) {
   lazy val taskTableQuery = TableQuery[TaskTable]
-/*
-  def createBatch(tasks: List[Task]): List[Future[Task]] ={
-    tasks.foreach(create(_))
-  }
 
-  def createEntities(tasks : List[Task]) = {
-    db.run(DBIO.sequence(tasks.map(create(_))).transactionally)
-  }
-*/
   def create(task: Task): Future[Task] =
     db.run(taskTableQuery returning taskTableQuery += task)
 
@@ -50,10 +42,6 @@ class TaskRepository(db: Database) {
 
   def deleteById(id: Option[Long]): Future[Int] =
     db.run(taskTableQuery.filter(_.idTask === id).delete)
-/*
-  def getById(task: Task): Future[Option[Task]] =
-    db.run(taskTableQuery.filter(_.idTask === task.idTask).result.headOption)
-    */
 
   def getById(idTask: Option[Long]): Future[Option[Task]] =
     db.run(taskTableQuery.filter(_.idTask === idTask).result.headOption)
