@@ -48,12 +48,26 @@ object DAO {
     tasks.map(taskRepository.create(_))
   }
 
+  def getUserId(login: String, password: String) = {
+    val queryToGetUserId = (for {
+      user <- UserTable.table if user.login === login && user.password === password
+    } yield (user.idUser))
+    db.run(queryToGetUserId.result)
+  }
+
+  def checkUserLogin(login: String, password: String) = {
+    db.run(UserTable.table.filter(t => (t.login === login) && (t.password === password)).exists.result)
+  }
+
+  def checkUserPassword(password: String) = {
+    db.run(UserTable.table.filter(_.password === password).exists.result)
+  }
+
   def addTask(name: String, currentUser: Long) = {
     taskRepository.create(Task(Some(21), currentUser, name, false))
   }
 
   def deleteTask(id: Option[Long]) = {
-
     val getTaskByIdLoc = (for {
       task <- TaskTable.table if task.idTask === id
     } yield (task))
