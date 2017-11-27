@@ -7,6 +7,10 @@ import scala.concurrent.Future
 
 object DAO {
 
+  def getUsersQuantity(): Future[Long] = {
+    db.run(UserTable.table.length.result)
+  }
+
   def getUserId(login: String): Future[Long] = {
     val queryToGetUserId = (for {
       user <- UserTable.table if user.login === login

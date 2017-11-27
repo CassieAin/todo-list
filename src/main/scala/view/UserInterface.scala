@@ -54,7 +54,7 @@ object UserInterface {
   }
 
   def displayInnerMenu():Int ={
-    println("TODO List:" + "\n1 - Display finished tasks" + "\n2 - Display unfinished tasks"
+    println("\nTODO List:" + "\n1 - Display finished tasks" + "\n2 - Display unfinished tasks"
       + "\n3 - Add task" + "\n4 - Delete task" + "\n5 - Mark task as finished" + "\n6 - Get back to the main menu")
     println("\nChoose the operation you want to perform:")
     val inputNum = readInt()
@@ -89,7 +89,7 @@ object UserInterface {
 
   def deleteTask() = {
     println()
-    println("Choose the task you want to delete, please:")
+    println("Choose the task id you want to delete, please:")
     val taskId = readLong()
     Await.result(DAO.deleteTask(Some(taskId)), Duration.Inf)
     displayInnerMenu()
@@ -97,7 +97,7 @@ object UserInterface {
 
   def markTaskAsFinished(id: Long) = {
     println()
-    println("Choose the task you want to mark as finished, please:")
+    println("Choose the task id you want to mark as finished, please:")
     val taskId = readLong()
     Await.result(DAO.finishTask(Some(taskId), id), Duration.Inf)
     displayInnerMenu()
