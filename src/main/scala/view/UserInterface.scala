@@ -7,6 +7,7 @@ import scala.concurrent.duration.Duration
 import scala.io.StdIn.{readInt, readLine, readLong}
 
 object UserInterface {
+
   def displayMainMenu(): Unit ={
     println("Main menu:" + " \n1 - Login" + "\n2 - Exit")
     println("\nChoose the operation you want to perform:")
