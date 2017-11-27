@@ -1,11 +1,16 @@
 package view
 
-import scala.io.StdIn.readInt
+import services.DAO
+import view.UserInterface.{buildMenu, displayInnerMenu, displayMainMenu}
+
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+import scala.io.StdIn.{readInt, readLine}
 
 object UserInterface2 {
 
   val mainActionMap = Map[Int, () => Boolean](1 -> login, 2 -> exit)
-  val innerActionMap = Map[Int, () => Boolean](1 -> displayFinishedTasks, 2 -> displayUnfinishedTasks,
+  val innerActionMap = Map[Int, () => Boolean](1 -> displayFinishedTasks(id), 2 -> displayUnfinishedTasks,
   3 -> addTask, 4 -> deleteTask, 5 -> markTaskAsFinished)
 
   def login(): Boolean = {
@@ -13,13 +18,32 @@ object UserInterface2 {
     true
   }
 
+  def enterSystem(): Unit ={
+    println("Input you login, please:")
+    val inputLogin = readLine()
+    println("Input you password, please:")
+    val inputPassword = readLine()
+
+    val checkLogin = Await.result(DAO.checkUserLogin(inputLogin, inputPassword), Duration.Inf).toString
+    //val userId = DAO.selectUserId(inputLogin)
+    val userId = Await.result(DAO.getUserId(inputLogin), Duration.Inf)
+
+    def changeOutputs(checkLogin: String):Unit = checkLogin match {
+      case "true" => println("You have successfully entered"); displayInnerMenu(); buildMenu(userId)
+      case "false" => println("Your input for login or password is wrong. Please, try again"); displayMainMenu()
+      case _ => println("Your input is wrong"); displayMainMenu()
+    }
+    changeOutputs(checkLogin)
+  }
+
   def exit(): Boolean = {
     System.exit(0)
     true
   }
 
-  def displayFinishedTasks(): Boolean = {
-    println("selected 1")
+  def displayFinishedTasks(id: Long): Boolean = {
+    println("User's finished tasks:\n" + Await.result(DAO.selectFinishedTasks(id), Duration.Inf).toList.toString)
+    displayInnerMenu()
     true
   }
 

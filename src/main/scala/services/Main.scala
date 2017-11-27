@@ -3,7 +3,7 @@ package services
 
 import models.{TaskRepository, UserRepository}
 import slick.jdbc.PostgresProfile.api._
-import view.UserInterface2
+import view._
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -15,8 +15,8 @@ object Main {
   val taskRepository = new TaskRepository(db)
 
   def main(args: Array[String]): Unit = {
-    // UserInterface.displayMainMenu()
-    UserInterface2.displayMainMenu()
+    UserInterface.displayMainMenu()
+    //UserInterface2.displayMainMenu()
   }
 
   def createSchemasAndFillWithData() = {
