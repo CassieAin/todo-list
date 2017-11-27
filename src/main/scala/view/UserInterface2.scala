@@ -9,9 +9,9 @@ import scala.io.StdIn.{readInt, readLine}
 object UserInterface2 {
 val id = 0
   val mainActionMap = Map[Int, () => Boolean](1 -> login, 2 -> exit)
-  val innerActionMap = Map[Int, () => Boolean](1 -> displayFinishedTasks, 2 -> displayUnfinishedTasks,
+  val innerActionMap = Map[Int, ((Long) => Boolean)](1 -> displayFinishedTasks, 2 -> displayUnfinishedTasks,
   3 -> addTask, 4 -> deleteTask, 5 -> markTaskAsFinished)
-  val loginMap = Map[String,() =>  Boolean]("true" -> correctLogin, "false" -> wrongLogin)
+  val loginMap = Map[String,((Long) =>  Boolean)]("true" -> correctLogin, "false" -> wrongLogin)
 
   def login(): Boolean = {
     println("Input you login, please:")
@@ -26,15 +26,14 @@ val id = 0
     true
   }
 
-  def correctLogin(): Boolean = {
+  def correctLogin(userId: Long): Boolean = {
     println("You have successfully entered")
-    displayInnerMenu()
-    //buildMenu(userId)
+    displayInnerMenu(userId)
     true
   }
 
-  def wrongLogin(): Boolean = {
-    displayInnerMenu()
+  def wrongLogin(userId: Long): Boolean = {
+    displayInnerMenu(userId)
     true
   }
 
@@ -52,28 +51,28 @@ val id = 0
     true
   }
 
-  def displayFinishedTasks(): Boolean = {
-    //println("User's finished tasks:\n" + Await.result(DAO.selectFinishedTasks(id), Duration.Inf).toList.toString)
-    displayInnerMenu()
+  def displayFinishedTasks(userId: Long): Boolean = {
+    println("User's finished tasks:\n" + Await.result(DAO.selectFinishedTasks(userId), Duration.Inf).toList.toString)
+    //displayInnerMenu()
     true
   }
 
-  def displayUnfinishedTasks(): Boolean = {
+  def displayUnfinishedTasks(userId: Long): Boolean = {
     System.exit(0)
     true
   }
 
-  def addTask(): Boolean = {
+  def addTask(userId: Long): Boolean = {
     System.exit(0)
     true
   }
 
-  def deleteTask(): Boolean = {
+  def deleteTask(userId: Long): Boolean = {
     System.exit(0)
     true
   }
 
-  def markTaskAsFinished(): Boolean = {
+  def markTaskAsFinished(userId: Long): Boolean = {
     System.exit(0)
     true
   }
@@ -87,7 +86,7 @@ val id = 0
     }
   }
 
-  def buildInnerMenu(option: Int): Boolean = {
+  def buildInnerMenu(option: Int, userId: Long): Boolean = {
     innerActionMap.get(option) match {
       case Some(f) => f()
       case None =>
@@ -103,12 +102,12 @@ val id = 0
     buildMainMenu(inputMainMenu)
   }
 
-  def displayInnerMenu() = {
+  def displayInnerMenu(userId: Long) = {
     println("\nTODO List:" + "\n1 - Display finished tasks" + "\n2 - Display unfinished tasks"
       + "\n3 - Add task" + "\n4 - Delete task" + "\n5 - Mark task as finished" + "\n6 - Get back to the main menu")
     println("\nChoose the operation you want to perform:")
     val inputNum = readInt()
-    buildInnerMenu(inputNum)
+    buildInnerMenu(inputNum, userId)
   }
 
 }
