@@ -27,7 +27,8 @@ object UserInterface {
     val inputPassword = readLine()
 
     val checkLogin = Await.result(DAO.checkUserLogin(inputLogin, inputPassword), Duration.Inf).toString
-    val userId = DAO.selectUserId(inputLogin)
+    //val userId = DAO.selectUserId(inputLogin)
+    val userId = Await.result(DAO.getUserId(inputLogin), Duration.Inf)
 
     def changeOutputs(checkLogin: String):Unit = checkLogin match {
       case "true" => println("You have successfully entered"); displayInnerMenu(); buildMenu(userId)

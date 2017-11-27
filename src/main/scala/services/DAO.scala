@@ -3,13 +3,17 @@ package services
 import models.{Task, TaskTable, UserTable}
 import slick.jdbc.PostgresProfile.api._
 
+import scala.concurrent.Future
+
 object DAO {
 
-  def getUserId(login: String) = {
+  def getUserId(login: String): Future[Long] = {
     val queryToGetUserId = (for {
       user <- UserTable.table if user.login === login
     } yield (user.idUser))
-    db.run(queryToGetUserId.result)
+        .result.head
+      //.head // Will throw exception if empty result
+    db.run(queryToGetUserId)
   }
 
   def selectUserId(login: String) = login match {
