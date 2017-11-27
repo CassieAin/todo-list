@@ -1,52 +1,9 @@
 package services
 
-import models.{Task, TaskTable, User, UserTable}
+import models.{Task, TaskTable, UserTable}
 import slick.jdbc.PostgresProfile.api._
 
 object DAO {
-
-  val users = List(
-    User(Some(1),"data","data","data user"),
-    User(Some(2),"root","root","root user")
-  )
-
-  val tasks = List(
-    Task(Some(1),  1,"Analyze logs with Spark", false),
-    Task(Some(2),  1,"Clean and process data", false),
-    Task(Some(3),  1,"Make simple analytics on cleaned data", false),
-    Task(Some(4),  1,"Design db for to-do list", true),
-    Task(Some(5),  1,"Create models and relations", true),
-    Task(Some(6),  1,"Fill db with data", false),
-    Task(Some(7),  1,"Perform simple queries", false),
-    Task(Some(8),  1,"Configure db on Heroku", true),
-    Task(Some(9),  1,"Introduce fixes", false),
-    Task(Some(10), 1,"Create user interface", false),
-    Task(Some(11), 2,"Have a walk", true),
-    Task(Some(12), 2,"Finish course work in Unity", false),
-    Task(Some(13), 2,"Finish lab works in IS", false),
-    Task(Some(14), 2,"Finish lab works in PM", true),
-    Task(Some(15), 2,"Finish first project for courses", false),
-    Task(Some(16), 2,"Finish watching Stranger Things season 2", false),
-    Task(Some(17), 2,"Finish course work in FS", false),
-    Task(Some(18), 2,"Pass all the texts for English", true),
-    Task(Some(19), 2,"Write all requirements for PM coursework", true),
-    Task(Some(20), 2,"Watch all missed talks from the conference", false)
-  )
-
-  val createUserTable = UserTable.table.schema.create
-  val createTaskTable = TaskTable.table.schema.create
-  val dropUserTable = UserTable.table.schema.drop
-  val dropTaskTable = TaskTable.table.schema.drop
-  val selectUsers = UserTable.table.result
-  val selectTasks = TaskTable.table.result
-  val tasksNumber = TaskTable.table.length
-  val fillUserTable = userRepository.createInBatch(users)
-  val fillTaskTable = taskRepository.createInBatch(tasks)
-
-  def fillDatabase(): Unit = {
-    users.map(userRepository.create(_))
-    tasks.map(taskRepository.create(_))
-  }
 
   def getUserId(login: String) = {
     val queryToGetUserId = (for {
@@ -58,8 +15,7 @@ object DAO {
   def selectUserId(login: String) = login match {
       case "data" => 1
       case "root" => 2
-    }
-
+  }
 
   def checkUserLogin(login: String, password: String) = {
     db.run(UserTable.table.filter(t => (t.login === login) && (t.password === password)).exists.result)
@@ -70,7 +26,7 @@ object DAO {
   }
 
   def addTask(name: String, currentUser: Long) = {
-    taskRepository.create(Task(Some(21), currentUser, name, false))
+    taskRepository.create(Task(Some(FillWithData.tasks.length + 2), currentUser, name, false))
   }
 
   def deleteTask(id: Option[Long]) = {
@@ -106,8 +62,8 @@ object DAO {
       user <- UserTable.table if task.ownerId === userId
     } yield (task, user))
         .filter(_._1.finished  === true)
-        .map(_._1.name)
-
+        .map{case (task, user) => (task.idTask, task.name)}
+        .sortBy(_._1)
     db.run(queryFinishedTasks.distinct.result)
   }
 
@@ -117,7 +73,8 @@ object DAO {
       user <- UserTable.table if task.ownerId === userId
     } yield (task, user))
       .filter(_._1.finished === false)
-      .map(_._1.name)
+      .map{case (task, user) => (task.idTask, task.name)}
+      .sortBy(_._1)
     db.run(queryUnFinishedTasks.distinct.result)
   }
 
