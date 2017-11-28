@@ -15,7 +15,7 @@ object Main {
   val taskRepository = new TaskRepository(db)
 
   def main(args: Array[String]): Unit = {
-    UserInterface2.displayMainMenu()
+    UserInterface.displayMainMenu()
   }
 
   def createSchemasAndFillWithData() = {
